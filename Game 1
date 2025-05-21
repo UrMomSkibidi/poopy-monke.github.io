@@ -1,108 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>My .IO Game Hub</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #1e1e2f;
-      color: #fff;
-      text-align: center;
-    }
-
-    header {
-      background: #ff0055;
-      padding: 2rem 1rem;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 2.5rem;
-    }
-
-    .game-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
-      padding: 2rem;
-      max-width: 1000px;
-      margin: auto;
-    }
-
-    .card {
-      background: #292942;
-      border-radius: 1rem;
-      padding: 1.5rem;
-      transition: 0.2s ease;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-    }
-
-    .card:hover {
-      transform: scale(1.05);
-      background: #3a3a5e;
-    }
-
-    .card h2 {
-      margin-top: 0;
-      font-size: 1.5rem;
-    }
-
-    .card p {
-      font-size: 1rem;
-      color: #ccc;
-    }
-
-    .card a {
-      display: inline-block;
-      margin-top: 1rem;
-      padding: 0.5rem 1rem;
-      background: #ff0055;
-      color: white;
-      text-decoration: none;
-      border-radius: 0.5rem;
-    }
-
-    footer {
-      margin-top: 2rem;
-      padding: 1rem;
-      background: #111;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>Skibidi Blaster</title>
+<style>
+  body { background: #111; color: white; font-family: sans-serif; text-align:center; margin:0; }
+  #game { margin: 2rem auto; width: 300px; height: 400px; background: #222; position: relative; overflow: hidden; border-radius: 1rem; }
+  .target {
+    width: 40px; height: 40px; background: #ff0055; border-radius: 50%; position: absolute; cursor: pointer;
+  }
+  #score { margin-top: 1rem; font-size: 1.5rem; }
+  #info { margin: 1rem; }
+  button { padding: 0.5rem 1rem; background:#ff0055; color:#fff; border:none; border-radius:0.5rem; cursor:pointer; }
+</style>
 </head>
 <body>
+  <h1>Skibidi Blaster</h1>
+  <div id="game"></div>
+  <div id="score">Score: 0</div>
+  <div id="info">Click the red targets to score!</div>
+  <button id="startBtn">Start Game</button>
 
-  <header>
-    <h1>My Skibidi Game Hub</h1>
-    <p>Click a card to play</p>
-  </header>
+<script>
+  const game = document.getElementById('game');
+  const scoreDisplay = document.getElementById('score');
+  const startBtn = document.getElementById('startBtn');
+  let score = 0;
+  let targets = [];
+  let gameInterval;
 
-  <section class="game-grid">
-    <div class="card">
-      <h2>Skibidi Blaster</h2>
-      <p>Dodge toilets, blast Sigma NPCs. Peak gameplay.</p>
-      <a href="game1/index.html">Play Now</a>
-    </div>
+  function createTarget() {
+    const target = document.createElement('div');
+    target.classList.add('target');
+    target.style.top = Math.random() * (game.clientHeight - 40) + 'px';
+    target.style.left = Math.random() * (game.clientWidth - 40) + 'px';
 
-    <div class="card">
-      <h2>Rizz Run</h2>
-      <p>Parkour through the Rizziverse. No Ls allowed.</p>
-      <a href="game2/index.html">Play Now</a>
-    </div>
+    target.addEventListener('click', () => {
+      score++;
+      scoreDisplay.textContent = 'Score: ' + score;
+      game.removeChild(target);
+      targets = targets.filter(t => t !== target);
+    });
 
-    <div class="card">
-      <h2>Fanum Frenzy</h2>
-      <p>Collect food, dodge the tax. Stay fed or get got.</p>
-      <a href="game3/index.html">Play Now</a>
-    </div>
-  </section>
+    game.appendChild(target);
+    targets.push(target);
+  }
 
-  <footer>
-    &copy; 2025 Skibidi Games. All rizz reserved.
-  </footer>
+  function startGame() {
+    score = 0;
+    scoreDisplay.textContent = 'Score: 0';
+    targets.forEach(t => game.removeChild(t));
+    targets = [];
+    startBtn.disabled = true;
+    gameInterval = setInterval(() => {
+      if(targets.length < 5) createTarget();
+    }, 1000);
 
+    setTimeout(() => {
+      clearInterval(gameInterval);
+      targets.forEach(t => game.removeChild(t));
+      alert('Game Over! Your score: ' + score);
+      startBtn.disabled = false;
+    }, 30000);
+  }
+
+  startBtn.addEventListener('click', startGame);
+</script>
 </body>
 </html>
